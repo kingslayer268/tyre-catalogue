@@ -20,13 +20,13 @@ def _safer_get(key, d: dict, ty, default=None):
     MISSING = object()
     val = d.get(key, MISSING)
 
-    if MISSING or val == None:
-        return None
+    if val is MISSING or val == None:
+        return default
 
     try:
         return ty(val)
     except (TypeError, ValueError):
-        raise InvalidFieldType(f"The field {key} must be of type {ty}")
+        raise InvalidFieldType(f"The field {key} must be of type {ty.__name__}")
 
 
 def _parse_price(value):

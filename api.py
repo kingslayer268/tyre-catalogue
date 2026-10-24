@@ -1,9 +1,11 @@
-from flask import Flask, jsonify, request, url_for
 import os
+
+from flask import Flask, jsonify, request, url_for
 from werkzeug.utils import secure_filename
+
 from database import TyreDatabase
-from extractor import Extractor
 from errors import *
+from extractor import Extractor
 
 upload_folder = "/uploads/"
 app = Flask(__name__)
