@@ -7,9 +7,10 @@ from database import TyreDatabase
 from errors import *
 from extractor import Extractor
 
-upload_folder = "/uploads/"
+upload_folder = "uploads"
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = upload_folder
+os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
 db_file = 'tyres.db'
 
@@ -31,7 +32,7 @@ def allowed_filename(filename):
     return '.' in filename and filename.rsplit('.')[1].lower() == 'xlsx'
 def get_page_url(page, args):
     args["page"] = page
-    return url_for("tyre_search", **args)
+    return url_for("tyre_search", _external = True, **args)
 
 @app.get("/api/tyres/search")
 def tyre_search():
