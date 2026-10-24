@@ -112,8 +112,8 @@ def tyre_import():
     
     try:
         ex = Extractor(file_path, brand_name, args)
-    except MissingFieldError as e:
-        return jsonify({'error': e})
+    except (MissingFieldError, InvalidFieldType) as e:
+        return jsonify({'error': str(e)}), 400
 
     try:
         tyre_set, failed = ex.extract()
@@ -121,5 +121,5 @@ def tyre_import():
         db.import_tyres(tyre_set)
         db.close()
     except Exception as e:
-        return jsonify({'error': e})
+        return jsonify({'error': str(e)})
     return {'total_count': len(tyre_set)+len(failed), 'succesful': len(tyre_set), 'failed': len(failed)} , 200

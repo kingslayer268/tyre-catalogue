@@ -15,6 +15,20 @@ EXTRACT_PATTERN = re.compile(
 )
 
 
+def _safer_get(key, d: dict, ty, default=None):
+
+    MISSING = object()
+    val = d.get(key, MISSING)
+
+    if MISSING or val == None:
+        return None
+
+    try:
+        return ty(val)
+    except (TypeError, ValueError):
+        raise InvalidFieldType(f"The field {key} must be of type {ty}")
+
+
 def _parse_price(value):
     if value is None:
         return None
@@ -31,25 +45,26 @@ def _parse_price(value):
         return None
     return float(value)
 
+
 class Extractor:
     def __init__(self, filename, brand, flags: dict):
         self._filename = filename
-        self.size_col  = flags.get("size_col", None)
-        self.mrp_col = flags.get("mrp_col", None)
-        self.pattern_col = flags.get("pattern_col", None)
-        self.rcp_col = flags.get("rcp_col", None)
-        self.inv_price_col = flags.get("invoice_price", None)
-        self.row_start = flags.get("row_start", None)
+        self.size_col = _safer_get("size_col", flags, int, None)
+        self.mrp_col = _safer_get("mrp_col", flags, int, None)
+        self.pattern_col = _safer_get("pattern_col", flags, int, None)
+        self.rcp_col = _safer_get("rcp_col", flags, int, None)
+        self.inv_price_col = _safer_get("invoice_price", flags, int, None)
+        self.row_start = _safer_get("row_start", flags, int, None)
         self.tyre_set = TyreSet()
         self.failed_set = []
         self.brand = brand
-        prices  = (self.mrp_col, self.rcp_col, self.inv_price_col)
+        prices = (self.mrp_col, self.rcp_col, self.inv_price_col)
         if all(price is None for price in prices):
             raise MissingFieldError("At least one price column needs to be provided.")
 
         if self.size_col is None:
             raise MissingFieldError("Size column not provided in flags")
-        
+
         if self.row_start == None:
             raise MissingFieldError("row_start column is not provided.")
 
@@ -58,7 +73,6 @@ class Extractor:
                 raise FileError
         except IndexError:
             raise FileError
-
 
     def parse_tyre_string(self, tyre_string):
         match = EXTRACT_PATTERN.search(tyre_string)
@@ -121,8 +135,8 @@ class Extractor:
                 parsed_data["rcp"] = _parse_price(row[self.rcp_col])
             if self.inv_price_col is not None:
                 parsed_data["inv_price"] = _parse_price(row[self.inv_price_col])
-            if self.pattern_col is not None:
-                parsed_data["pattern"] = row[self.pattern_col].strip().upper()
+            if self.pattern_col is not None and isinstance(row[self.pattern_col], str):
+                    parsed_data["pattern"] = str(row[self.pattern_col]).strip().upper()
 
             tyre = Tyre(
                 source_row=ind + 1,

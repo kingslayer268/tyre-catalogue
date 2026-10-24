@@ -8,9 +8,11 @@ class FileError(ExtractorError):
 class MissingFieldError(ExtractorError):
     """Error raised if a field is missing"""
 
+class InvalidFieldType(ExtractorError):
+    """Error raised if an invalid value is given for the field type."""
+
 class TyreDataParsingError(ExtractorError):
     """Error raised if there is any problem in parsing tyre data"""
-
 class DatabaseError(Exception):
     """Base Exception for any error with the extractor"""
 
