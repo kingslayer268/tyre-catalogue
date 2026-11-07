@@ -95,7 +95,7 @@ class Extractor:
         return parsed_text
 
     def extract(self):
-        ws = load_workbook(filename=self._filename).active
+        ws = load_workbook(filename=self._filename, data_only=True).active
         if ws is None:
             raise FileError
         if self.size_col is None:
@@ -106,6 +106,7 @@ class Extractor:
             if ind < self.row_start:
                 continue
             raw_tyre_text = row[self.size_col]
+            print(raw_tyre_text)
             if not isinstance(raw_tyre_text, str):
                 self.failed_set.append(
                     {
