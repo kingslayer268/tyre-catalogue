@@ -193,9 +193,11 @@ class TyreDatabase:
         if order_by not in allowed_columns:
             raise DatabaseError(f"Invalid Order_by field: {order_by}")
 
-        query += f" ORDER BY {order_by}, id"
+        query += f" ORDER BY {order_by}"
         if not ascending:
             query += " DESC"
+
+        query += ", id"
 
         query += f" LIMIT {self.PAGE_SIZE + 1} OFFSET {offset}"
 
