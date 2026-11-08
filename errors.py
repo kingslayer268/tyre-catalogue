@@ -1,7 +1,6 @@
 class ExtractorError(Exception):
     """Base Exception for any error with the extractor"""
 
-
 class FileError(ExtractorError):
     """Error raised if a file type not supported is supplied to the extractor"""
 

@@ -39,14 +39,14 @@ class TyreDatabase:
                     pattern TEXT NOT NULL DEFAULT '',
                     mrp REAL,
                     rcp REAL,
-                    invoice_price REAL,
+                    mop REAL,
                     source_file TEXT NOT NULL,
                     source_row INTEGER NOT NULL,
 
                     CHECK (
                         mrp IS NOT NULL
                         OR rcp IS NOT NULL
-                        OR invoice_price IS NOT NULL
+                        OR mop IS NOT NULL
                     ),
 
                     UNIQUE (
@@ -63,14 +63,14 @@ class TyreDatabase:
                     tyre_id INTEGER NOT NULL REFERENCES tyres(id),
                     mrp REAL,
                     rcp REAL,
-                    invoice_price REAL,
+                    mop REAL,
                     source_file TEXT NOT NULL,
                     source_row INTEGER NOT NULL,
                     recorded_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                     CHECK (
                         mrp IS NOT NULL
                         OR rcp IS NOT NULL
-                        OR invoice_price IS NOT NULL
+                        OR mop IS NOT NULL
                     )
                 )
             """
@@ -84,7 +84,7 @@ class TyreDatabase:
                         tyre_id,
                         mrp,
                         rcp,
-                        invoice_price,
+                        mop,
                         source_file,
                         source_row
                     )
@@ -92,7 +92,7 @@ class TyreDatabase:
                         NEW.id,
                         NEW.mrp,
                         NEW.rcp,
-                        NEW.invoice_price,
+                        NEW.mop,
                         NEW.source_file,
                         NEW.source_row
                     );
@@ -102,16 +102,16 @@ class TyreDatabase:
             self.con.execute(
                 """
                 CREATE TRIGGER IF NOT EXISTS tyre_price_history_update
-                AFTER UPDATE OF mrp, rcp, invoice_price ON tyres
+                AFTER UPDATE OF mrp, rcp, mop ON tyres
                 WHEN OLD.mrp IS NOT NEW.mrp
                   OR OLD.rcp IS NOT NEW.rcp
-                  OR OLD.invoice_price IS NOT NEW.invoice_price
+                  OR OLD.mop IS NOT NEW.mop
                 BEGIN
                     INSERT INTO price_history (
                         tyre_id,
                         mrp,
                         rcp,
-                        invoice_price,
+                        mop,
                         source_file,
                         source_row
                     )
@@ -119,7 +119,7 @@ class TyreDatabase:
                         NEW.id,
                         NEW.mrp,
                         NEW.rcp,
-                        NEW.invoice_price,
+                        NEW.mop,
                         NEW.source_file,
                         NEW.source_row
                     );
@@ -135,14 +135,14 @@ class TyreDatabase:
         query = """
             INSERT INTO tyres (
                 brand, prefix, width, ratio, rim_size, pattern,
-                mrp, rcp, invoice_price, source_file, source_row
+                mrp, rcp, mop, source_file, source_row
             )
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT (brand, prefix, width, ratio, rim_size, pattern)
             DO UPDATE SET
                 mrp = excluded.mrp,
                 rcp = excluded.rcp,
-                invoice_price = excluded.invoice_price,
+                mop = excluded.mop,
                 source_file = excluded.source_file,
                 source_row = excluded.source_row
         """
@@ -171,7 +171,7 @@ class TyreDatabase:
             "pattern",
             "mrp",
             "rcp",
-            "invoice_price",
+            "mop",
             "source_file",
             "source_row",
         }

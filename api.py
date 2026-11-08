@@ -23,7 +23,7 @@ FILTER_TYPES = {
     "pattern": str,
     "mrp": float,
     "rcp": float,
-    "invoice_price": float,
+    "mop": float,
 }
 
 FILTER_TYPES = dict(sorted(FILTER_TYPES.items(), key = lambda fil: fil[0]))

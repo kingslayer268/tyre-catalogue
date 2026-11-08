@@ -14,7 +14,7 @@ class Tyre:
     source_row: int
     mrp: float | None = None
     rcp: float | None = None
-    invoice_price: float | None = None
+    mop: float | None = None
     
     @classmethod
     def from_dict(cls, data):
@@ -29,7 +29,7 @@ class Tyre:
             source_row=data['source_row'],
             mrp=data['mrp'],
             rcp=data['rcp'],
-            invoice_price=data['invoice_price']
+            mop=data['mop']
         )
     def to_dict(self):
         return asdict(self)
@@ -44,7 +44,7 @@ class Tyre:
             self.pattern,
             self.mrp,
             self.rcp,
-            self.invoice_price,
+            self.mop,
             self.source_file,
             self.source_row,
         )       

@@ -53,12 +53,12 @@ class Extractor:
         self.mrp_col = _safer_get("mrp_col", flags, int, None)
         self.pattern_col = _safer_get("pattern_col", flags, int, None)
         self.rcp_col = _safer_get("rcp_col", flags, int, None)
-        self.inv_price_col = _safer_get("invoice_price", flags, int, None)
+        self.mop_col = _safer_get("mop_col", flags, int, None)
         self.row_start = _safer_get("row_start", flags, int, None)
         self.tyre_set = TyreSet()
         self.failed_set = []
         self.brand = brand
-        prices = (self.mrp_col, self.rcp_col, self.inv_price_col)
+        prices = (self.mrp_col, self.rcp_col, self.mop_col)
         if all(price is None for price in prices):
             raise MissingFieldError("At least one price column needs to be provided.")
 
@@ -91,7 +91,7 @@ class Extractor:
         parsed_text["pattern"] = "".join(p).strip().upper()
         parsed_text["mrp"] = None
         parsed_text["rcp"] = None
-        parsed_text["inv_price"] = None
+        parsed_text["mop"] = None
         return parsed_text
 
     def extract(self):
@@ -134,8 +134,8 @@ class Extractor:
                 parsed_data["mrp"] = _parse_price(row[self.mrp_col])
             if self.rcp_col is not None:
                 parsed_data["rcp"] = _parse_price(row[self.rcp_col])
-            if self.inv_price_col is not None:
-                parsed_data["inv_price"] = _parse_price(row[self.inv_price_col])
+            if self.mop_col is not None:
+                parsed_data["mop"] = _parse_price(row[self.mop_col])
             if self.pattern_col is not None and isinstance(row[self.pattern_col], str):
                     parsed_data["pattern"] = str(row[self.pattern_col]).strip().upper()
 
@@ -150,9 +150,9 @@ class Extractor:
                 pattern=parsed_data["pattern"],
                 mrp=parsed_data["mrp"],
                 rcp=parsed_data["rcp"],
-                invoice_price=parsed_data["inv_price"],
+                mop=parsed_data["mop"],
             )
-            prices = (tyre.mrp, tyre.rcp, tyre.invoice_price)
+            prices = (tyre.mrp, tyre.rcp, tyre.mop)
             if all(price is None for price in prices):
                 self.failed_set.append(
                     {
